@@ -1,3 +1,82 @@
+/* ----- FORMULAIRE ------ */
+
+$('#formulaire').validate(
+    {
+        rules: {
+            prenom: {
+                required: true,
+                maxlength: 50,
+                alphanumerique: true
+            },
+            nom: {
+                required: true,
+                maxlength: 50,
+                alphanumerique: true
+            },
+            date: {
+                required: true,
+                datePlusPetite: true
+            },
+            statut: {
+                statutRequis: true
+            }
+        },
+        messages: {
+            prenom: {
+                required: "Le prénom est obligatoire",
+                maxlength: "Le prénom ne peut être plus long que 50 caractères"
+            },
+            nom: {
+                required: "Le nom est obligatoire",
+                maxlength: "Le nom ne peut être plus long que 50 caractères"
+            },
+            date: {
+                required: "La date est requise"
+            },
+            statut: {
+                required: "Veuillez choisir un statut"
+            }
+        },
+        submitHandler: function() {
+            CreerQuiz()
+        }
+    }
+)
+
+jQuery.validator.addMethod(
+    "alphanumerique",
+    function (value, element) {
+        return this.optional(element) || /^[\w.]+$/i.test(value);
+    },
+    `Lettres, nombres et soulignements seulement`
+);
+
+$.validator.addMethod(
+    "datePlusPetite",
+    function (value, element) {
+        const dateActuelle = new Date();
+        return this.optional(element) || dateActuelle >= new Date(value);
+    },
+    "La date de naissance doit être inférieure à la date d'aujourd'hui"
+)
+
+
+$.validator.addMethod(
+    'statutRequis',
+    function (value) {
+        return (value != '0');
+    },
+    "Veuillez entrer un statut"
+);
+
+
+
+
+
+
+
+/*------ QUIZ -------*/
+
 const quizData = `
 [
 	{
@@ -23,3 +102,5 @@ const quizData = `
 
 const quizJSON = JSON.parse(quizData);
 
+
+CreerQuiz()
