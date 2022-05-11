@@ -1,5 +1,10 @@
 /* ----- FORMULAIRE ------ */
 
+
+let profil
+let estSoumis = false
+
+
 $('#formulaire').validate(
     {
         rules: {
@@ -38,24 +43,40 @@ $('#formulaire').validate(
             }
         },
         submitHandler: function() {
-            CreerQuiz()
+            // profil = sauvegarderProfil()
+            creerQuiz()
+        },
+        showErrors: function (errorMap, errorList) {
+            if (estSoumis) {
+                $.each(errorList, function () {
+                    let divAlert = $(`<div>${this.message}</div>`).addClass('alert alert-danger')
+                    $('#afficherErreurs').append(divAlert)
+                })
+                estSoumis = false
+            }
+            this.defaultShowErrors()
+        },
+        invalidHandler: function(form, validator) {
+            estSoumis = true
         }
     }
 )
 
-jQuery.validator.addMethod(
+
+$.validator.addMethod(
     "alphanumerique",
     function (value, element) {
-        return this.optional(element) || /^[\w.]+$/i.test(value);
+        return this.optional(element) || /^[\w.]+$/i.test(value)
     },
     `Lettres, nombres et soulignements seulement`
 );
+
 
 $.validator.addMethod(
     "datePlusPetite",
     function (value, element) {
         const dateActuelle = new Date();
-        return this.optional(element) || dateActuelle >= new Date(value);
+        return this.optional(element) || dateActuelle >= new Date(value)
     },
     "La date de naissance doit être inférieure à la date d'aujourd'hui"
 )
@@ -64,12 +85,10 @@ $.validator.addMethod(
 $.validator.addMethod(
     'statutRequis',
     function (value) {
-        return (value != '0');
+        return (value != '0')
     },
     "Veuillez entrer un statut"
 );
-
-
 
 
 
@@ -103,4 +122,6 @@ const quizData = `
 const quizJSON = JSON.parse(quizData);
 
 
-CreerQuiz()
+function creerQuiz(){
+    alert('allo')
+}
