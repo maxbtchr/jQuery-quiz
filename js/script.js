@@ -170,23 +170,26 @@ const quizData = `
 
 const quizJSON = JSON.parse(quizData);
 console.log(quizJSON)
-
 function creerQuiz() {
   let i = 1;
   $("#formulaire").hide();
   quizTemplate = $("#quizTemplate").html();
   quizTemplate = $(quizTemplate);
   quizTemplate.find("h2").html(`Question #${i}`);
-  quizTemplate.find("h3").html(`Contenu de la question`);
+  quizTemplate.find("h3").html(`${quizJSON[i - 1].question}`);
   quizTemplate.find("#prochaineQuestion").html("Prochaine question");
   $("#quiz").append(quizTemplate);
   $("#formulaire").parent().find("#quiz").show();
   $("#prochaineQuestion").on("click", function () {
-    i++;
+    if (i < quizJSON.length) {
+      i++;
+    }
+    
     quizTemplate.find("h2").html(`Question #${i}`);
-    quizTemplate.find("h3").html(`Contenu de la question`);
+    quizTemplate.find("h3").html(`${quizJSON[i - 1].question}`);
     quizTemplate.find("#prochaineQuestion").html("Prochaine question");
-    if (i == 5) {
+    console.log('i', i);
+    if (i == quizJSON.length) {
       quizTemplate.find("#prochaineQuestion").html("Terminer");
       $("#prochaineQuestion").on("click", function () {
         afficherResultats();
