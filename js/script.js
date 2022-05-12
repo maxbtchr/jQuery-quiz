@@ -6,11 +6,17 @@ formulaireTemplate = $(formulaireTemplate)
 $("#formulaire").append(formulaireTemplate)
 
 
-let profil
+let profil = {
+    "prenom": "",
+    "nom": "",
+    "age": "",
+    "statut": ""
+}
+
 let estSoumis = false
 
 
-$('#formulaire').validate(
+$('#enregistrement').validate(
     {
         rules: {
             prenom: {
@@ -47,21 +53,22 @@ $('#formulaire').validate(
                 required: "Veuillez choisir un statut"
             }
         },
-        submitHandler: function() {
-            // profil = sauvegarderProfil()
+        submitHandler: function () {
+            profil = sauvegarderProfil()
             creerQuiz()
         },
         showErrors: function (errorMap, errorList) {
             if (estSoumis) {
-                $.each(errorList, function () {
-                    let divAlert = $(`<div>${this.message}</div>`).addClass('alert alert-danger')
-                    $('#afficherErreurs').append(divAlert)
-                })
+                let divAlert = $(`<div></div>`).addClass('alert alert-danger')
+                let sommaire = ""
+                $.each(errorList, function () { sommaire += this.message + " <br/> " });
+                divAlert.html(sommaire)
+                $("#afficherErreurs").html(divAlert);
                 estSoumis = false
             }
             this.defaultShowErrors()
         },
-        invalidHandler: function(form, validator) {
+        invalidHandler: function (form, validator) {
             estSoumis = true
         }
     }
@@ -95,7 +102,25 @@ $.validator.addMethod(
     "Veuillez entrer un statut"
 );
 
+$("#date").datepicker()
 
+
+function calculerAge () {
+    var a = new Date();
+    annee = a.getFullYear()
+    selectedDate = $('#date').datepicker("getDate").getFullYear()
+    return annee - selectedDate
+}
+
+function sauvegarderProfil() {
+    
+    profil.age = calculerAge()
+    profil.prenom = $("#prenom").val()
+    profil.nom = $("#nom").val()
+    profil.statut = $("#statut").val()
+    console.log(profil)
+    console.log($("#date").datepicker().val())
+}
 
 
 /*------ QUIZ -------*/
@@ -126,30 +151,30 @@ const quizData = `
 const quizJSON = JSON.parse(quizData);
 
 
-function creerQuiz(){
-        let i = 1;
-        $("#formulaire").hide()
-        quizTemplate = $("#quizTemplate").html()
-        quizTemplate = $(quizTemplate)
+function creerQuiz() {
+    let i = 1;
+    $("#formulaire").hide()
+    quizTemplate = $("#quizTemplate").html()
+    quizTemplate = $(quizTemplate)
+    quizTemplate.find('h2').html(`Question #${i}`)
+    quizTemplate.find('h3').html(`Contenu de la question`)
+    quizTemplate.find('#prochaineQuestion').html("Prochaine question")
+    $("#quiz").append(quizTemplate)
+    $("#formulaire").parent().find("#quiz").show()
+    $("#prochaineQuestion").on("click", function () {
+        i++
         quizTemplate.find('h2').html(`Question #${i}`)
         quizTemplate.find('h3').html(`Contenu de la question`)
         quizTemplate.find('#prochaineQuestion').html("Prochaine question")
-        $("#quiz").append(quizTemplate)
-        $("#formulaire").parent().find("#quiz").show()
-        $("#prochaineQuestion").on("click", function () {
-            i++
-            quizTemplate.find('h2').html(`Question #${i}`)
-            quizTemplate.find('h3').html(`Contenu de la question`)
-            quizTemplate.find('#prochaineQuestion').html("Prochaine question")
-            if (i == 5) {
-                quizTemplate.find('#prochaineQuestion').html("Terminer")
-                $("#prochaineQuestion").on("click", function () {
-                    afficherResultats()
-                })
-            }
-        })
+        if (i == 5) {
+            quizTemplate.find('#prochaineQuestion').html("Terminer")
+            $("#prochaineQuestion").on("click", function () {
+                afficherResultats()
+            })
+        }
+    })
 }
-    
+
 
 
 
@@ -157,7 +182,7 @@ function creerQuiz(){
 /* ---- RESULTATS ---- */
 
 
-function afficherResultats(){
+function afficherResultats() {
     $("#quiz").hide()
     resultatsTemplate = $("#resultatsTemplate").html()
     resultatsTemplate = $(resultatsTemplate)
@@ -172,13 +197,13 @@ function afficherResultats(){
 
     /* ----- ACCORDEON ----- */
 
-    for(let i=0;i<3;i++){
+    for (let i = 0; i < 3; i++) {
         accordeon = $("#accordeon").html()
         accordeon = $(accordeon)
         accordeon.find('button').html("Titre" + i)
         accordeon.find('#headingOne').attr('id', 'heading' + i)
         accordeon.find('[data-target="#collapseOne"]').attr('data-target', '#collapse' + i)
-        accordeon.find('#collapseOne').attr('id','collapse' + i)
+        accordeon.find('#collapseOne').attr('id', 'collapse' + i)
         accordeon.find('.card-body').html("Contenu" + i)
         $("#accordeonQuestions").append(accordeon)
     }
