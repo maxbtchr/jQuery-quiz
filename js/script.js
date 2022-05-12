@@ -5,16 +5,8 @@ formulaireTemplate = $("#formulaireTemplate").html()
 formulaireTemplate = $(formulaireTemplate)
 $("#formulaire").append(formulaireTemplate)
 
-
-let profil = {
-    "prenom": "",
-    "nom": "",
-    "age": "",
-    "statut": ""
-}
-
 let estSoumis = false
-
+let profil
 
 $('#enregistrement').validate(
     {
@@ -106,20 +98,21 @@ $("#date").datepicker()
 
 
 function calculerAge () {
-    var a = new Date();
+    var a = new Date()
     annee = a.getFullYear()
     selectedDate = $('#date').datepicker("getDate").getFullYear()
     return annee - selectedDate
 }
 
 function sauvegarderProfil() {
-    
-    profil.age = calculerAge()
-    profil.prenom = $("#prenom").val()
-    profil.nom = $("#nom").val()
-    profil.statut = $("#statut").val()
-    console.log(profil)
-    console.log($("#date").datepicker().val())
+    profil = {
+        "Prénom": $("#prenom").val(),
+        "Nom": $("#nom").val(),
+        "Âge": calculerAge(),
+        "Statut": $("#statut").val(),
+        "Bonnes réponses": ""
+    }
+    return profil
 }
 
 
@@ -194,6 +187,16 @@ function afficherResultats() {
             "sSearchPlaceholder": "Votre recherche..."
         }
     });
+
+
+    let listeProfil = resultatsTemplate.find("ul")
+    Object.entries(profil).forEach(entry => {
+        let [key, value] = entry
+        listeProfil.append(`<li>${key}: ${value}</li>`)
+      });
+
+
+
 
     /* ----- ACCORDEON ----- */
 
