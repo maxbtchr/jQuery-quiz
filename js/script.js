@@ -163,12 +163,13 @@ const quizData = `
             "1992"
         ], 
         "réponse":2
-    },
+    }
 
 ]
 `;
 
 const quizJSON = JSON.parse(quizData);
+console.log(quizJSON)
 
 function creerQuiz() {
   let i = 1;
@@ -216,16 +217,18 @@ function afficherResultats() {
 
   /* ----- ACCORDEON ----- */
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < quizJSON.length; i++) {
     accordeon = $("#accordeon").html();
     accordeon = $(accordeon);
-    accordeon.find("button").html("Titre" + i);
-    accordeon.find("#headingOne").attr("id", "heading" + i);
+    accordeon.find("button").html(quizJSON[i].question);
+    accordeon.find("#enteteUn").attr("id", "entete" + i);
     accordeon
-      .find('[data-target="#collapseOne"]')
-      .attr("data-target", "#collapse" + i);
-    accordeon.find("#collapseOne").attr("id", "collapse" + i);
-    accordeon.find(".card-body").html("Contenu" + i);
+      .find('[data-target="#retrecirUn"]')
+      .attr("data-target", "#retrecir" + i);
+    accordeon.find("#retrecirUn").attr("id", "retrecir" + i);
+    for (let j = 0; j < quizJSON[i].réponses.length; j++) {
+      accordeon.find(".card-body").append(quizJSON[i].réponses[j] + "</br>");
+    }
     $("#accordeonQuestions").append(accordeon);
   }
 }
