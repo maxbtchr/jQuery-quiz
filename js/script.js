@@ -101,12 +101,13 @@ function calculerAge() {
 
 function sauvegarderProfil() {
   profil = {
-    Prénom: $("#prenom").val(),
-    Nom: $("#nom").val(),
-    Âge: calculerAge(),
-    Statut: $("#statut").val(),
-reponsesSelectionnes: [],
-"Bonnes réponses": 0,
+    prenom: $("#prenom").val(),
+    nom: $("#nom").val(),
+    age: calculerAge(),
+    statut: $("#statut").val(),
+    reponsesSelectionnes: [],
+    "bonnes réponses": 0,
+    questionsCorrects: [],
   };
   return profil;
 }
@@ -236,7 +237,8 @@ function verifierReponse() {
   }
 
   if (choixSelectionne == quizJSON[questionActuelle].réponse) {
-    profil["Bonnes réponses"]++;
+    profil["bonnes réponses"]++;
+    profil.questionsCorrects.push(questionActuelle);
   }
 
   questionActuelle++;
@@ -276,7 +278,7 @@ function afficherResultats() {
       .attr("data-target", "#retrecir" + i);
     accordeon.find("#retrecirUn").attr("id", "retrecir" + i);
     for (let j = 0; j < quizJSON[i].réponses.length; j++) {
-      accordeon.find(".card-body").append(quizJSON[i].réponses[j] + "</br>");
+      accordeon.find(".card-body").append(`<div>${j + 1}) ${quizJSON[i].réponses[j]}</div>`);
     }
     $("#accordeonQuestions").append(accordeon);
   }
