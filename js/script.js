@@ -5,7 +5,7 @@ formulaireTemplate = $(formulaireTemplate);
 $("#formulaire").append(formulaireTemplate);
 
 let estSoumis = false;
-let profil;
+let profil = {};
 
 $("#enregistrement").validate({
   rules: {
@@ -105,12 +105,15 @@ function sauvegarderProfil() {
     Nom: $("#nom").val(),
     Âge: calculerAge(),
     Statut: $("#statut").val(),
-    "Bonnes réponses": "",
+reponsesSelectionnes: [],
+"Bonnes réponses": 0,
   };
   return profil;
 }
 
 /*------ QUIZ -------*/
+
+let questionActuelle = 0;
 
 const quizData = `
 [
@@ -142,7 +145,7 @@ const quizData = `
             "Oasis",
             "The Police"
         ], 
-        "réponse":2
+        "réponse":0
     },
     {
         "question":" À quel âge Mozart a-t-il composé son premier menuet ?",
@@ -169,33 +172,76 @@ const quizData = `
 `;
 
 const quizJSON = JSON.parse(quizData);
-console.log(quizJSON)
 function creerQuiz() {
-  let i = 1;
   $("#formulaire").hide();
-  quizTemplate = $("#quizTemplate").html();
-  quizTemplate = $(quizTemplate);
-  quizTemplate.find("h2").html(`Question #${i}`);
-  quizTemplate.find("h3").html(`${quizJSON[i - 1].question}`);
-  quizTemplate.find("#prochaineQuestion").html("Prochaine question");
-  $("#quiz").append(quizTemplate);
-  $("#formulaire").parent().find("#quiz").show();
-  $("#prochaineQuestion").on("click", function () {
-    if (i < quizJSON.length) {
-      i++;
-    }
-    
-    quizTemplate.find("h2").html(`Question #${i}`);
-    quizTemplate.find("h3").html(`${quizJSON[i - 1].question}`);
-    quizTemplate.find("#prochaineQuestion").html("Prochaine question");
-    console.log('i', i);
-    if (i == quizJSON.length) {
-      quizTemplate.find("#prochaineQuestion").html("Terminer");
-      $("#prochaineQuestion").on("click", function () {
-        afficherResultats();
-      });
-    }
+  afficherQuestion();
+}
+
+function afficherQuestion() {
+  let quiz = $("#quiz");
+  quiz.empty();
+
+  if (questionActuelle >= quizJSON.length) {
+    afficherResultats();
+    return false;
+  }
+
+  let progressWidth = (questionActuelle / quizJSON.length) * 100;
+
+  quiz.append(
+    `<div class="progress mx-5 mb-5" id="progress-div"><div class="progress-bar bg-info" id="progress-bar" role="progressbar" style="width: ${progressWidth}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div></div>`
+  );
+
+  quiz.append('<h2 id="quelleQuestion" class="mb-3"></h2>');
+  $("#quelleQuestion").html(
+    `Question ${questionActuelle + 1} de ${quizJSON.length}`
+  );
+
+  let question = quizJSON[questionActuelle].question;
+  $("#quiz").append(`<h3>${question}</h3>`);
+
+  let reponses = quizJSON[questionActuelle].réponses;
+  let value = 0;
+  reponses.forEach((reponse) => {
+    $("#quiz").append(
+      `<div><label class="mr-5 quiz-responses">${reponse}</label><input type="radio" name="choix" value="${value}"></div>`
+    );
+    value++;
   });
+
+  if (questionActuelle + 1 !== quizJSON.length) {
+    $("#quiz").append(
+      `<button id="btn-quiz" class="btn btn-outline-info">Question Suivante</button>`
+    );
+  } else {
+    $("#quiz").append(
+      `<button id="btn-quiz" class="btn btn-outline-info">Terminer</button>`
+    );
+  }
+
+  $("#btn-quiz").click(function () {
+    verifierReponse();
+  });
+}
+
+function verifierReponse() {
+  let choix = $('input[name="choix"]');
+  let choixSelectionne;
+
+  for (let i = 0; i < choix.length; i++) {
+    if (choix[i].checked) {
+      choixSelectionne = choix[i].value;
+      profil.reponsesSelectionnes.push(choixSelectionne);
+    }
+  }
+
+  if (choixSelectionne == quizJSON[questionActuelle].réponse) {
+    profil["Bonnes réponses"]++;
+  }
+
+  questionActuelle++;
+
+  afficherQuestion();
 }
 
 /* ---- RESULTATS ---- */
