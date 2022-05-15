@@ -252,6 +252,23 @@ function afficherResultats() {
   $("#quiz").hide();
   resultatsTemplate = $("#resultatsTemplate").html();
   resultatsTemplate = $(resultatsTemplate);
+  for (let i = 0; i < quizJSON.length; i++) {
+    let bonneResponse = quizJSON[i].réponse == profil.reponsesSelectionnes[i];
+    let reussi;
+    if (bonneResponse) {
+      reussi = 'Oui';
+    } else {
+      reussi = 'Non';
+    }
+
+    resultatsTemplate.find('tbody').append(`<tr>
+    <td>${i + 1}</td>
+    <td>${quizJSON[i].question}</td>
+    <td>${reussi}</td>
+    </tr>`);
+  }
+  resultatsTemplate.find('tbody').a;
+
   $("#resultats").append(resultatsTemplate);
   $("#tableau").DataTable({
     language: {
