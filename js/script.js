@@ -229,6 +229,9 @@ function verifierReponse() {
   let choix = $('input[name="choix"]');
   let choixSelectionne;
 
+  $("#quiz").fadeOut();
+  $("#quiz").fadeIn();
+
   for (let i = 0; i < choix.length; i++) {
     if (choix[i].checked) {
       choixSelectionne = choix[i].value;
@@ -256,18 +259,18 @@ function afficherResultats() {
     let bonneResponse = quizJSON[i].réponse == profil.reponsesSelectionnes[i];
     let reussi;
     if (bonneResponse) {
-      reussi = 'Oui';
+      reussi = "Oui";
     } else {
-      reussi = 'Non';
+      reussi = "Non";
     }
 
-    resultatsTemplate.find('tbody').append(`<tr>
+    resultatsTemplate.find("tbody").append(`<tr>
     <td>${i + 1}</td>
     <td>${quizJSON[i].question}</td>
     <td>${reussi}</td>
     </tr>`);
   }
-  resultatsTemplate.find('tbody').a;
+  resultatsTemplate.find("tbody").a;
 
   $("#resultats").append(resultatsTemplate);
   $("#tableau").DataTable({
@@ -295,7 +298,9 @@ function afficherResultats() {
       .attr("data-target", "#retrecir" + i);
     accordeon.find("#retrecirUn").attr("id", "retrecir" + i);
     for (let j = 0; j < quizJSON[i].réponses.length; j++) {
-      accordeon.find(".card-body").append(`<div>${j + 1}) ${quizJSON[i].réponses[j]}</div>`);
+      accordeon
+        .find(".card-body")
+        .append(`<div>${j + 1}) ${quizJSON[i].réponses[j]}</div>`);
     }
     $("#accordeonQuestions").append(accordeon);
   }
