@@ -91,20 +91,19 @@ $.validator.addMethod(
   "Veuillez entrer un statut"
 );
 
-$("#date").datepicker();
 
-function calculerAge() {
-  var a = new Date();
-  annee = a.getFullYear();
-  selectedDate = $("#date").datepicker("getDate").getFullYear();
-  return annee - selectedDate;
+function calculerAge(dateString) {
+  let ageEnMillisecondes = new Date() - new Date(dateString);
+  return Math.floor(ageEnMillisecondes/1000/60/60/24/365);
 }
+
+
 
 function sauvegarderProfil() {
   profil = {
     "Prénom": $("#prenom").val(),
     "Nom": $("#nom").val(),
-    "Âge": calculerAge(),
+    "Âge": calculerAge($('#date').val()),
     "Statut": $("#statut").val(),
     "Réponses sélectionnées": [],
     "Bonnes réponses": 0,
@@ -182,21 +181,18 @@ function creerQuiz() {
 
 function afficherQuestion() {
   let quiz = $("#quiz");
-  $("#alerte").hide()
-  quiz.fadeIn();
-  
 
   if (questionActuelle >= quizJSON.length) {
     afficherResultats();
     return false;
-  } else {
-    quiz.fadeIn();
-  }
+  } 
 
-  let progressWidth = (questionActuelle / quizJSON.length) * 100;
+  quiz.fadeIn();
+ 
+  let progressWidth = (questionActuelle / quizJSON.length) * 100 + 20;
 
-  $(" #progress-bar ").attr( "style", `width:${progressWidth}%` );
-  $(" #progress-bar ").attr( "aria-valuenow", `${progressWidth}` );
+  $(" #progress-bar ").css("width", `${progressWidth}%`);
+  $(" #progress-bar ").attr("aria-valuenow", `${progressWidth}`);
 
   $("#numQuestion").text(
     `Question ${questionActuelle + 1} de ${quizJSON.length}`
@@ -209,7 +205,10 @@ function afficherQuestion() {
   let value = 0;
   reponses.forEach((reponse) => {
     $("#choixDeReponses").append(
-      `<label class="mr-5">${reponse}</label><input type="radio" name="choix" value="${value}">`
+      `<div class="form-check">
+          <input class="form-check-input" type="radio" name="choix" value="${value}">
+          <label class="form-check-label">${reponse}</label>
+        </div>`
     );
     value++;
   });
@@ -228,14 +227,12 @@ function afficherQuestion() {
 function verifierReponse() {
   let choix = $('input[name="choix"]');
   let choixSelectionne;
-  let reponseChoisie = false;
 
 
   for (let i = 0; i < choix.length; i++) {
     if (choix[i].checked) {
       choixSelectionne = choix[i].value;
       profil["Réponses sélectionnées"].push(choixSelectionne);
-      reponseChoisie = true;
     }
   }
 
@@ -244,15 +241,10 @@ function verifierReponse() {
     profil["Questions réussies"].push(questionActuelle);
   }
 
-  if (reponseChoisie) {
-    $("#quiz").fadeOut();
+  if (choixSelectionne) {
     questionActuelle++;
-    $("#quiz").hide();
-    $("#alerte").hide()
-    $("#choixDeReponses").empty();
+    $("#choixDeReponses").empty()
     afficherQuestion();
-  } else {
-    $("#alerte").show()
   }
 }
 
@@ -262,13 +254,31 @@ function afficherResultats() {
   $("#quiz").hide();
   resultatsTemplate = $("#resultatsTemplate").html();
   resultatsTemplate = $(resultatsTemplate);
-  
-  let pointage = $('h2').addClass("col pb-5 text-center")
-  let textePointage = `Votre pointage final : ${profil["Bonnes réponses"]} sur ${quizJSON.length}`
-  pointage.text("Votre pointage final :" + profil['Bonnes réponses'] + " sur " + quizJSON.length)
-  $(pointage).prependTo(resultatsTemplate)
+  $("#resultats").append(resultatsTemplate);
 
-  console.log(textePointage)
+  $('#modal').modal('show')
+
+  if (profil["Bonnes réponses"] < 3) {
+    $('.modal-title').text("Échec !")
+    $('.modal-body').append("<p>Vouz avez échouer. </p>")
+    $('#pointage').attr("class", "alert text-center alert-danger")
+    $('#pointage').html("Échec !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+  }
+
+  if (profil["Bonnes réponses"] == 3) {
+    $('.modal-title').text("Réussite !")
+    $('.modal-body').append("<p>Vouz avez réussi. </p>")
+    $('#pointage').attr("class", "alert text-center alert-warning")
+    $('#pointage').html("Vous avez réussi de justesse !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+  }
+
+  if (profil["Bonnes réponses"] > 3) {
+    $('.modal-title').text("Réussite !")
+    $('.modal-body').append("<p>Vouz avez réussi. </p>")
+    $('#pointage').attr("class", "alert text-center alert-success")
+    $('#pointage').html("Succès !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+  }
+
 
   for (let i = 0; i < quizJSON.length; i++) {
     let bonneReponse = quizJSON[i].réponse == profil["Réponses sélectionnées"][i];
@@ -286,7 +296,6 @@ function afficherResultats() {
     </tr>`);
   }
 
-  $("#resultats").append(resultatsTemplate);
   $("#tableau").DataTable({
     language: {
       url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json",
@@ -304,7 +313,7 @@ function afficherResultats() {
       for (let i = 0; i < quizJSON.length; i++) {
         listeSelect.append(`<li>Question ${i + 1}: réponse: ${rep[i]}</li>`)
       }
-    } else if (key == "Questions réussies"){
+    } else if (key == "Questions réussies") {
       let ques = value.map(q => parseInt(q) + 1)
       listeProfil.append(`<li class="list-group-item">${key}: ${ques.join(", ")}</li>`)
     } else {
