@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="../css/jquery-ui.min.css">
     <link rel="stylesheet" href="../css/jquery-ui.structure.min.css">
-    <title>Formulaire</title>
+    <title>Quiz sur connaissances musicales</title>
 </head>
 
 <body>
@@ -32,8 +32,8 @@
                     <input type="text" class="form-control" id="nom" name="nom">
                 </div>
                 <div class="form-group">
-                    <label for="date">Votre date de naissance</label>
-                    <input class="form-control" id="date" name="date">
+                    <label for="date de naissance">Votre date de naissance</label>
+                    <input class="form-control" id="date" type="date" name="date de naissance">
                 </div>
                 <div class="form-group">
                     <label class="my-1 mr-2" for="statut">Votre statut</label>
@@ -44,27 +44,41 @@
                     </select>
                 </div>
                 <hr class="mb-4">
-                <button type="submit" class="btn btn-primary btn-lg btn-block">Soumettre</button>
+                <button type="submit" class="btn btn-secondary btn-lg btn-block">Soumettre</button>
             </form>
         </div>
     </template>
 
-    <!--- TEMPLATE DU QUIZ--->
-    <div id="quiz" class="text-center">
-        <h2 id="quelleQuestion"></h2>
-    </div>
-
     <!--- TEMPLATE DES RÉSULTATS--->
 
     <template id="resultatsTemplate">
-        <h2 class="col pb-5 text-center">(résultat) sur 5</h2>
+        <div class="modal" id="modal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title"></h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <!-- <p>Modal body text goes here.</p> -->
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="alert text-center" role="alert" id="pointage">Veuillez choisir une réponse</div>
         <div class="row">
             <section class="col-md-3">
-                <h3>Vos informations</h3>
-                <ul>
+                <h2 class="text-center">Vos informations</h2>
+                <ul class="list-group">
                 </ul>
             </section>
             <section class="col-md-6">
+                <h2 class="text-center">Vos résultats</h2>
                 <table id="tableau">
                     <thead>
                         <tr>
@@ -81,15 +95,16 @@
 
                 <!--- TEMPLATE DE L'ACCORDÉON--->
 
+                <h2 class="text-center">Les questions</h2>
                 <template id="accordeon">
                     <div class="card">
                         <div class="card-header" id="enteteUn">
-                            <h2 class="mb-0">
+                            <h3 class="mb-0">
                                 <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
-                                    data-target="#retrecirUn" aria-expanded="true" aria-controls="retrecirUn">
+                                    data-target="#retrecirUn" aria-expanded="true" aria-controls="retrecirUn" aria-label="voir réponses">
 
                                 </button>
-                            </h2>
+                            </h3>
                         </div>
 
                         <div id="retrecirUn" class="collapse" aria-labelledby="enteteUn"
@@ -110,7 +125,19 @@
 
     <main class="container">
         <div id="formulaire"></div>
-        <div id="quiz"></div>
+        <div id="quiz" class="text-center">
+            <div class="progress mx-5 mb-5" id="progress-div">
+                <div class="progress-bar bg-secondary" id="progress-bar" role="progressbar" style="" aria-valuenow="" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div id="questionsDiv">
+                <h2 id="question" class="mb-3"></h2>
+                <h3 id="afficherQuestion"></h3>
+                <div class="container" id="choixDeReponses">
+    
+                </div>
+                <button id="btn-quiz" class="btn mt-4 btn-outline-primary"></button>
+            </div>
+        </div>
         <div id="resultats"></div>
     </main>
 

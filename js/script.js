@@ -3,6 +3,7 @@
 formulaireTemplate = $("#formulaireTemplate").html();
 formulaireTemplate = $(formulaireTemplate);
 $("#formulaire").append(formulaireTemplate);
+$("#quiz").hide()
 
 let estSoumis = false;
 let profil = {};
@@ -50,6 +51,7 @@ $("#enregistrement").validate({
   showErrors: function (errorMap, errorList) {
     if (estSoumis) {
       let divAlert = $(`<div></div>`).addClass("alert alert-danger");
+      divAlert.attr("role", "alerte");
       let sommaire = "";
       $.each(errorList, function () {
         sommaire += this.message + " <br/> ";
@@ -90,24 +92,23 @@ $.validator.addMethod(
   "Veuillez entrer un statut"
 );
 
-$("#date").datepicker();
 
-function calculerAge() {
-  var a = new Date();
-  annee = a.getFullYear();
-  selectedDate = $("#date").datepicker("getDate").getFullYear();
-  return annee - selectedDate;
+function calculerAge(dateString) {
+  let ageEnMillisecondes = new Date() - new Date(dateString);
+  return Math.floor(ageEnMillisecondes/1000/60/60/24/365);
 }
+
+
 
 function sauvegarderProfil() {
   profil = {
-    prenom: $("#prenom").val(),
-    nom: $("#nom").val(),
-    age: calculerAge(),
-    statut: $("#statut").val(),
-    reponsesSelectionnes: [],
-    "bonnes réponses": 0,
-    questionsCorrects: [],
+    "Prénom": $("#prenom").val(),
+    "Nom": $("#nom").val(),
+    "Âge": calculerAge($('#date').val()),
+    "Statut": $("#statut").val(),
+    "Réponses sélectionnées": [],
+    "Bonnes réponses": 0,
+    "Questions réussies": [],
   };
   return profil;
 }
@@ -119,7 +120,7 @@ let questionActuelle = 0;
 const quizData = `
 [
 	{
-		"question":"De quel pays, les Beatles sont-ils originaires ?",
+		"question":"De quel pays les Beatles sont-ils originaires ?",
 		"réponses":[
 		"États-Unis",
 		"Allemagne", 
@@ -156,7 +157,7 @@ const quizData = `
             "À 6 ans",
             "À 7 ans"
         ], 
-        "réponse":3
+        "réponse":2
     },
     {
         "question":"Quand est sorti le premier single de Sean Paul ?",
@@ -175,52 +176,53 @@ const quizData = `
 const quizJSON = JSON.parse(quizData);
 function creerQuiz() {
   $("#formulaire").hide();
+  $("#quiz").show()
   afficherQuestion();
 }
 
 function afficherQuestion() {
-  let quiz = $("#quiz");
-  quiz.empty();
 
   if (questionActuelle >= quizJSON.length) {
+    $("#quiz").empty();
     afficherResultats();
     return false;
-  }
+  } 
 
-  let progressWidth = (questionActuelle / quizJSON.length) * 100;
+  $('#questionsDiv').fadeIn(1000);
+ 
+  let progressWidth = (questionActuelle / quizJSON.length) * 100 + 20;
 
-  quiz.append(
-    `<div class="progress mx-5 mb-5" id="progress-div"><div class="progress-bar bg-info" id="progress-bar" role="progressbar" style="width: ${progressWidth}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div></div>`
-  );
+  $(" #progress-bar ").css("width", `${progressWidth}%`);
+  $(" #progress-bar ").attr("aria-valuenow", `${progressWidth}`);
 
-  quiz.append('<h2 id="quelleQuestion" class="mb-3"></h2>');
-  $("#quelleQuestion").html(
+  $("#numeroQuestion").text(
     `Question ${questionActuelle + 1} de ${quizJSON.length}`
   );
 
   let question = quizJSON[questionActuelle].question;
-  $("#quiz").append(`<h3>${question}</h3>`);
+  $("#question").text(`${question}`);
 
   let reponses = quizJSON[questionActuelle].réponses;
   let value = 0;
   reponses.forEach((reponse) => {
-    $("#quiz").append(
-      `<div><label class="mr-5 quiz-responses">${reponse}</label><input type="radio" name="choix" value="${value}"></div>`
+    $("#choixDeReponses").append(
+      `<div class="form-check">
+          <input class="form-check-input" type="radio" name="choix" value="${value}" aria-label="${reponse}">
+          <label class="form-check-label" for="${reponse}">${reponse}</label>
+        </div>`
     );
     value++;
   });
 
   if (questionActuelle + 1 !== quizJSON.length) {
-    $("#quiz").append(
-      `<button id="btn-quiz" class="btn btn-outline-info">Question Suivante</button>`
-    );
+    $("#btn-quiz").text("Question Suivante");
+    $("#btn-quiz").attr("aria-label", "question suivante")
   } else {
-    $("#quiz").append(
-      `<button id="btn-quiz" class="btn btn-outline-info">Terminer</button>`
-    );
+    $("#btn-quiz").text("Terminer");
+    $("#btn-quiz").attr("aria-label", "terminer quiz")
   }
 
-  $("#btn-quiz").click(function () {
+  $("#btn-quiz").on("click", function () {
     verifierReponse();
   });
 }
@@ -229,36 +231,63 @@ function verifierReponse() {
   let choix = $('input[name="choix"]');
   let choixSelectionne;
 
-  $("#quiz").fadeOut();
-  $("#quiz").fadeIn();
 
   for (let i = 0; i < choix.length; i++) {
     if (choix[i].checked) {
       choixSelectionne = choix[i].value;
-      profil.reponsesSelectionnes.push(choixSelectionne);
+      profil["Réponses sélectionnées"].push(choixSelectionne);
     }
   }
 
   if (choixSelectionne == quizJSON[questionActuelle].réponse) {
-    profil["bonnes réponses"]++;
-    profil.questionsCorrects.push(questionActuelle);
+    profil["Bonnes réponses"]++;
+    profil["Questions réussies"].push(questionActuelle);
   }
 
-  questionActuelle++;
-
-  afficherQuestion();
+  if (choixSelectionne) {
+    questionActuelle++;
+    $("#choixDeReponses").empty()
+    $('#questionsDiv').hide(500)
+    afficherQuestion();
+  }
 }
 
 /* ---- RESULTATS ---- */
 
 function afficherResultats() {
-  $("#quiz").hide();
+
   resultatsTemplate = $("#resultatsTemplate").html();
   resultatsTemplate = $(resultatsTemplate);
+  $("#resultats").append(resultatsTemplate);
+
+  $('#modal').modal('show')
+
+  if (profil["Bonnes réponses"] < 3) {
+    $('.modal-title').text("Échec !")
+    $('.modal-body').append("<p>Vouz avez échoué. </p>")
+    $('#pointage').addClass("alert-danger")
+    $('#pointage').html("Échec !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+  }
+
+  if (profil["Bonnes réponses"] == 3) {
+    $('.modal-title').text("Réussite !")
+    $('.modal-body').append("<p>Vouz avez réussi. </p>")
+    $('#pointage').addClass("alert-warning")
+    $('#pointage').html("Vous avez réussi de justesse !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+  }
+
+  if (profil["Bonnes réponses"] > 3) {
+    $('.modal-title').text("Réussite !")
+    $('.modal-body').append("<p>Vouz avez réussi. </p>")
+    $('#pointage').addClass("alert-success")
+    $('#pointage').html("Succès !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+  }
+
+
   for (let i = 0; i < quizJSON.length; i++) {
-    let bonneResponse = quizJSON[i].réponse == profil.reponsesSelectionnes[i];
+    let bonneReponse = quizJSON[i].réponse == profil["Réponses sélectionnées"][i];
     let reussi;
-    if (bonneResponse) {
+    if (bonneReponse) {
       reussi = "Oui";
     } else {
       reussi = "Non";
@@ -270,9 +299,7 @@ function afficherResultats() {
     <td>${reussi}</td>
     </tr>`);
   }
-  resultatsTemplate.find("tbody").a;
 
-  $("#resultats").append(resultatsTemplate);
   $("#tableau").DataTable({
     language: {
       url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json",
@@ -283,7 +310,20 @@ function afficherResultats() {
   let listeProfil = resultatsTemplate.find("ul");
   Object.entries(profil).forEach((entry) => {
     let [key, value] = entry;
-    listeProfil.append(`<li>${key}: ${value}</li>`);
+    if (key == "Réponses sélectionnées") {
+      listeProfil.append(`<li class="list-group-item">${key}<ul id="select"></ol></li>`)
+      listeSelect = listeProfil.find("#select")
+      let rep = value.map(r => parseInt(r) + 1)
+      for (let i = 0; i < quizJSON.length; i++) {
+        listeSelect.append(`<li>Question ${i + 1}: réponse: ${rep[i]}</li>`)
+      }
+    } else if (key == "Questions réussies") {
+      let ques = value.map(q => parseInt(q) + 1)
+      listeProfil.append(`<li class="list-group-item">${key}: ${ques.join(", ")}</li>`)
+    } else {
+      listeProfil.append(`<li class="list-group-item">${key}: ${value}</li>`);
+    }
+
   });
 
   /* ----- ACCORDEON ----- */
