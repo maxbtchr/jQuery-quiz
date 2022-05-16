@@ -1,4 +1,5 @@
 $primary: #022E64;
+$secondary: #02642e;
 
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
 
@@ -11,4 +12,5 @@ body {
 
 h1,h2 {
     font-family: odile, serif;
+    color: $primary;
 }

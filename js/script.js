@@ -38,7 +38,7 @@ $("#enregistrement").validate({
       maxlength: "Le nom ne peut être plus long que 50 caractères",
     },
     date: {
-      required: "La date est requise",
+      required: "La date de naissance est requise",
     },
     statut: {
       required: "Veuillez choisir un statut",
