@@ -1,3 +1,14 @@
-
+$primary: #022E64;
 
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
+
+body {
+    font-family: neuzeit-grotesk, sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    height: 100vh;
+}
+
+h1,h2 {
+    font-family: odile, serif;
+}
