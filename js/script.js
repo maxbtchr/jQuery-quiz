@@ -3,6 +3,7 @@
 formulaireTemplate = $("#formulaireTemplate").html();
 formulaireTemplate = $(formulaireTemplate);
 $("#formulaire").append(formulaireTemplate);
+$("#quiz").hide()
 
 let estSoumis = false;
 let profil = {};
@@ -101,13 +102,13 @@ function calculerAge() {
 
 function sauvegarderProfil() {
   profil = {
-    prenom: $("#prenom").val(),
-    nom: $("#nom").val(),
-    age: calculerAge(),
-    statut: $("#statut").val(),
-    reponsesSelectionnes: [],
-    "bonnes réponses": 0,
-    questionsCorrects: [],
+    "Prénom": $("#prenom").val(),
+    "Nom": $("#nom").val(),
+    "Âge": calculerAge(),
+    "Statut": $("#statut").val(),
+    "Réponses sélectionnées": [],
+    "Bonnes réponses": 0,
+    "Questions réussies": [],
   };
   return profil;
 }
@@ -119,7 +120,7 @@ let questionActuelle = 0;
 const quizData = `
 [
 	{
-		"question":"De quel pays, les Beatles sont-ils originaires ?",
+		"question":"De quel pays les Beatles sont-ils originaires ?",
 		"réponses":[
 		"États-Unis",
 		"Allemagne", 
@@ -156,7 +157,7 @@ const quizData = `
             "À 6 ans",
             "À 7 ans"
         ], 
-        "réponse":3
+        "réponse":2
     },
     {
         "question":"Quand est sorti le premier single de Sean Paul ?",
@@ -175,52 +176,51 @@ const quizData = `
 const quizJSON = JSON.parse(quizData);
 function creerQuiz() {
   $("#formulaire").hide();
+  $("#quiz").show()
   afficherQuestion();
 }
 
 function afficherQuestion() {
   let quiz = $("#quiz");
-  quiz.empty();
+  $("#alerte").hide()
+  quiz.fadeIn();
+  
 
   if (questionActuelle >= quizJSON.length) {
     afficherResultats();
     return false;
+  } else {
+    quiz.fadeIn();
   }
 
   let progressWidth = (questionActuelle / quizJSON.length) * 100;
 
-  quiz.append(
-    `<div class="progress mx-5 mb-5" id="progress-div"><div class="progress-bar bg-info" id="progress-bar" role="progressbar" style="width: ${progressWidth}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div></div>`
-  );
+  $(" #progress-bar ").attr( "style", `width:${progressWidth}%` );
+  $(" #progress-bar ").attr( "aria-valuenow", `${progressWidth}` );
 
-  quiz.append('<h2 id="quelleQuestion" class="mb-3"></h2>');
-  $("#quelleQuestion").html(
+  $("#numQuestion").text(
     `Question ${questionActuelle + 1} de ${quizJSON.length}`
   );
 
   let question = quizJSON[questionActuelle].question;
-  $("#quiz").append(`<h3>${question}</h3>`);
+  $("#afficherQuestion").text(`${question}`);
 
   let reponses = quizJSON[questionActuelle].réponses;
   let value = 0;
   reponses.forEach((reponse) => {
-    $("#quiz").append(
-      `<div><label class="mr-5 quiz-responses">${reponse}</label><input type="radio" name="choix" value="${value}"></div>`
+    $("#choixDeReponses").append(
+      `<label class="mr-5">${reponse}</label><input type="radio" name="choix" value="${value}">`
     );
     value++;
   });
 
   if (questionActuelle + 1 !== quizJSON.length) {
-    $("#quiz").append(
-      `<button id="btn-quiz" class="btn btn-outline-info">Question Suivante</button>`
-    );
+    $("#btn-quiz").text("Question Suivante");
   } else {
-    $("#quiz").append(
-      `<button id="btn-quiz" class="btn btn-outline-info">Terminer</button>`
-    );
+    $("#btn-quiz").text("Terminer");
   }
 
-  $("#btn-quiz").click(function () {
+  $("#btn-quiz").on("click", function () {
     verifierReponse();
   });
 }
@@ -228,25 +228,32 @@ function afficherQuestion() {
 function verifierReponse() {
   let choix = $('input[name="choix"]');
   let choixSelectionne;
+  let reponseChoisie = false;
 
-  $("#quiz").fadeOut();
-  $("#quiz").fadeIn();
 
   for (let i = 0; i < choix.length; i++) {
     if (choix[i].checked) {
       choixSelectionne = choix[i].value;
-      profil.reponsesSelectionnes.push(choixSelectionne);
+      profil["Réponses sélectionnées"].push(choixSelectionne);
+      reponseChoisie = true;
     }
   }
 
   if (choixSelectionne == quizJSON[questionActuelle].réponse) {
-    profil["bonnes réponses"]++;
-    profil.questionsCorrects.push(questionActuelle);
+    profil["Bonnes réponses"]++;
+    profil["Questions réussies"].push(questionActuelle);
   }
 
-  questionActuelle++;
-
-  afficherQuestion();
+  if (reponseChoisie) {
+    $("#quiz").fadeOut();
+    questionActuelle++;
+    $("#quiz").hide();
+    $("#alerte").hide()
+    $("#choixDeReponses").empty();
+    afficherQuestion();
+  } else {
+    $("#alerte").show()
+  }
 }
 
 /* ---- RESULTATS ---- */
@@ -255,10 +262,18 @@ function afficherResultats() {
   $("#quiz").hide();
   resultatsTemplate = $("#resultatsTemplate").html();
   resultatsTemplate = $(resultatsTemplate);
+  
+  let pointage = $('h2').addClass("col pb-5 text-center")
+  let textePointage = `Votre pointage final : ${profil["Bonnes réponses"]} sur ${quizJSON.length}`
+  pointage.text("Votre pointage final :" + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+  $(pointage).prependTo(resultatsTemplate)
+
+  console.log(textePointage)
+
   for (let i = 0; i < quizJSON.length; i++) {
-    let bonneResponse = quizJSON[i].réponse == profil.reponsesSelectionnes[i];
+    let bonneReponse = quizJSON[i].réponse == profil["Réponses sélectionnées"][i];
     let reussi;
-    if (bonneResponse) {
+    if (bonneReponse) {
       reussi = "Oui";
     } else {
       reussi = "Non";
@@ -270,7 +285,6 @@ function afficherResultats() {
     <td>${reussi}</td>
     </tr>`);
   }
-  resultatsTemplate.find("tbody").a;
 
   $("#resultats").append(resultatsTemplate);
   $("#tableau").DataTable({
@@ -283,7 +297,20 @@ function afficherResultats() {
   let listeProfil = resultatsTemplate.find("ul");
   Object.entries(profil).forEach((entry) => {
     let [key, value] = entry;
-    listeProfil.append(`<li>${key}: ${value}</li>`);
+    if (key == "Réponses sélectionnées") {
+      listeProfil.append(`<li class="list-group-item">${key}<ul id="select"></ol></li>`)
+      listeSelect = listeProfil.find("#select")
+      let rep = value.map(r => parseInt(r) + 1)
+      for (let i = 0; i < quizJSON.length; i++) {
+        listeSelect.append(`<li>Question ${i + 1}: réponse: ${rep[i]}</li>`)
+      }
+    } else if (key == "Questions réussies"){
+      let ques = value.map(q => parseInt(q) + 1)
+      listeProfil.append(`<li class="list-group-item">${key}: ${ques.join(", ")}</li>`)
+    } else {
+      listeProfil.append(`<li class="list-group-item">${key}: ${value}</li>`);
+    }
+
   });
 
   /* ----- ACCORDEON ----- */

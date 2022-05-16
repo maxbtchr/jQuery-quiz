@@ -49,19 +49,15 @@
         </div>
     </template>
 
-    <!--- TEMPLATE DU QUIZ--->
-    <div id="quiz" class="text-center">
-        <h2 id="quelleQuestion"></h2>
-    </div>
-
     <!--- TEMPLATE DES RÉSULTATS--->
 
     <template id="resultatsTemplate">
-        <h2 class="col pb-5 text-center">(résultat) sur 5</h2>
+        <h2 class="col pb-5 text-center" id="scoreFinal">
+        </h2>
         <div class="row">
             <section class="col-md-3">
                 <h3>Vos informations</h3>
-                <ul>
+                <ul class="list-group">
                 </ul>
             </section>
             <section class="col-md-6">
@@ -110,7 +106,18 @@
 
     <main class="container">
         <div id="formulaire"></div>
-        <div id="quiz"></div>
+        <div id="quiz" class="text-center">
+            <div class="progress mx-5 mb-5" id="progress-div">
+                <div class="progress-bar bg-info" id="progress-bar" role="progressbar" style="" aria-valuenow="" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="alert alert-danger" id="alerte">Veuillez choisir une réponse</div>
+            <h2 id="numQuestion" class="mb-3"></h2>
+            <h3 id="afficherQuestion"></h3>
+            <div class="form-check" id="choixDeReponses">
+
+            </div>
+            <button id="btn-quiz" class="btn btn-outline-info"></button>
+        </div>
         <div id="resultats"></div>
     </main>
 
