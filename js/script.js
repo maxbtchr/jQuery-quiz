@@ -94,8 +94,17 @@ $.validator.addMethod(
 
 
 function calculerAge(dateString) {
-  let ageEnMillisecondes = new Date() - new Date(dateString);
-  return Math.floor(ageEnMillisecondes/1000/60/60/24/365);
+  let dateTableau = dateString.split('-');
+  let annee = dateTableau[0];
+  let mois = dateTableau[1];
+  let jour = dateTableau[2];
+
+  const anniversaire = new Date(`${mois}/${jour}/${annee}`);
+  const differenceDeMois = Date.now() - anniversaire.getTime();
+  const differnceConverti = new Date(differenceDeMois);
+  const anneeExtrait = differnceConverti.getUTCFullYear();
+  const age = Math.abs(anneeExtrait - 1970);
+  return age; 
 }
 
 
