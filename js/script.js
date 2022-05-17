@@ -94,9 +94,8 @@ $.validator.addMethod(
   "Veuillez entrer un statut"
 );
 
-
 function calculerAge(dateString) {
-  let dateTableau = dateString.split('-');
+  let dateTableau = dateString.split("-");
   let annee = dateTableau[0];
   let mois = dateTableau[1];
   let jour = dateTableau[2];
@@ -106,24 +105,21 @@ function calculerAge(dateString) {
   const differnceConverti = new Date(differenceDeMois);
   const anneeExtrait = differnceConverti.getUTCFullYear();
   const age = Math.abs(anneeExtrait - 1970);
-  return age; 
+  return age;
 }
-
-
 
 function sauvegarderProfil() {
   profil = {
-    "Prénom": $("#prenom").val(),
-    "Nom": $("#nom").val(),
-    "Âge": calculerAge($('#dateDeNaissance').val()),
-    "Statut": $("#statut").val(),
+    Prénom: $("#prenom").val(),
+    Nom: $("#nom").val(),
+    Âge: calculerAge($("#dateDeNaissance").val()),
+    Statut: $("#statut").val(),
     "Réponses sélectionnées": [],
     "Bonnes réponses": 0,
     "Questions réussies": [],
   };
   return profil;
 }
-
 
 /* ---------------------------- */
 /*              QUIZ            */
@@ -191,7 +187,6 @@ const quizData = `
 
 const quizJSON = JSON.parse(quizData);
 
-
 /*----- CRÉER QUIZ -----*/
 
 function creerQuiz() {
@@ -201,19 +196,17 @@ function creerQuiz() {
 }
 
 function afficherQuestion() {
-
   if (questionActuelle >= quizJSON.length) {
     $("#quiz").empty();
     afficherResultats();
     return false;
-  } 
+  }
 
-/*----- ANIMATION -----*/
+  /*----- ANIMATION -----*/
 
-  $('#questionsDiv').fadeIn(1000);
+  $("#questionsDiv").fadeIn(1000);
 
-
-/*----- BARRE DE PROGRESSION -----*/ 
+  /*----- BARRE DE PROGRESSION -----*/
 
   let progressWidth = (questionActuelle / quizJSON.length) * 100 + 20;
 
@@ -224,8 +217,7 @@ function afficherQuestion() {
     `Question ${questionActuelle + 1} de ${quizJSON.length}`
   );
 
-
-/*----- AFFICHER LA QUESTION ET LES RÉPONSES -----*/
+  /*----- AFFICHER LA QUESTION ET LES RÉPONSES -----*/
 
   let question = quizJSON[questionActuelle].question;
   $("#question").text(`${question}`);
@@ -255,13 +247,11 @@ function afficherQuestion() {
   });
 }
 
-
 /*----- VÉRIFIER LES RÉPONSES -----*/
 
 function verifierReponse() {
   let choix = $('input[name="choix"]');
   let choixSelectionne;
-
 
   for (let i = 0; i < choix.length; i++) {
     if (choix[i].checked) {
@@ -270,59 +260,76 @@ function verifierReponse() {
     }
   }
 
-  if (choixSelectionne == quizJSON[questionActuelle].réponse) {
-    profil["Bonnes réponses"]++;
-    profil["Questions réussies"].push(questionActuelle);
+  try {
+    if (choixSelectionne == quizJSON[questionActuelle].réponse) {
+      profil["Bonnes réponses"]++;
+      profil["Questions réussies"].push(questionActuelle);
+    }
+  } catch (TypeError) {
   }
 
   if (choixSelectionne) {
     questionActuelle++;
     $("#choixDeReponses").empty();
-    $('#questionsDiv').hide(500);
+    $("#questionsDiv").hide(500);
     afficherQuestion();
   }
 }
-
 
 /* ---------------------------- */
 /*           RESULTATS          */
 /* ---------------------------- */
 
 function afficherResultats() {
-
   resultatsTemplate = $("#resultatsTemplate").html();
   resultatsTemplate = $(resultatsTemplate);
   $("#resultats").append(resultatsTemplate);
 
-/*---- MODAL & ALERTE POINTAGE ----*/
+  /*---- MODAL & ALERTE POINTAGE ----*/
 
-  $('#modal').modal('show');
+  $("#modal").modal("show");
 
   if (profil["Bonnes réponses"] < 3) {
-    $('.modal-title').text("Échec !");
-    $('.modal-body').append("<p>Vous avez échoué. </p>");
-    $('#pointage').addClass("alert-danger");
-    $('#pointage').html("Échec !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
+    $(".modal-title").text("Échec !");
+    $(".modal-body").append("<p>Vous avez échoué. </p>");
+    $("#pointage").addClass("alert-danger");
+    $("#pointage").html(
+      "Échec !</br>Vous avez obtenu " +
+        profil["Bonnes réponses"] +
+        " sur " +
+        quizJSON.length
+    );
   }
 
   if (profil["Bonnes réponses"] == 3) {
-    $('.modal-title').text("Réussite !");
-    $('.modal-body').append("<p>Vous avez réussi. </p>");
-    $('#pointage').addClass("alert-warning");
-    $('#pointage').html("Vous avez réussi de justesse !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
+    $(".modal-title").text("Réussite !");
+    $(".modal-body").append("<p>Vous avez réussi. </p>");
+    $("#pointage").addClass("alert-warning");
+    $("#pointage").html(
+      "Vous avez réussi de justesse !</br>Vous avez obtenu " +
+        profil["Bonnes réponses"] +
+        " sur " +
+        quizJSON.length
+    );
   }
 
   if (profil["Bonnes réponses"] > 3) {
-    $('.modal-title').text("Réussite !");
-    $('.modal-body').append("<p>Vous avez réussi. </p>");
-    $('#pointage').addClass("alert-success");
-    $('#pointage').html("Succès !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
+    $(".modal-title").text("Réussite !");
+    $(".modal-body").append("<p>Vous avez réussi. </p>");
+    $("#pointage").addClass("alert-success");
+    $("#pointage").html(
+      "Succès !</br>Vous avez obtenu " +
+        profil["Bonnes réponses"] +
+        " sur " +
+        quizJSON.length
+    );
   }
 
-/*----- TABLEAU -----*/
+  /*----- TABLEAU -----*/
 
   for (let i = 0; i < quizJSON.length; i++) {
-    let bonneReponse = quizJSON[i].réponse == profil["Réponses sélectionnées"][i];
+    let bonneReponse =
+      quizJSON[i].réponse == profil["Réponses sélectionnées"][i];
     let reussi;
     if (bonneReponse) {
       reussi = "Oui";
@@ -344,28 +351,31 @@ function afficherResultats() {
     },
   });
 
-/*----- AFFICHAGE PROFIL -----*/
+  /*----- AFFICHAGE PROFIL -----*/
 
   let listeProfil = resultatsTemplate.find("ul");
   Object.entries(profil).forEach((entry) => {
     let [key, value] = entry;
     if (key == "Réponses sélectionnées") {
-      listeProfil.append(`<li class="list-group-item">${key}<ul id="select"></ol></li>`)
-      listeSelect = listeProfil.find("#select")
-      let rep = value.map(r => parseInt(r) + 1)
+      listeProfil.append(
+        `<li class="list-group-item">${key}<ul id="select"></ol></li>`
+      );
+      listeSelect = listeProfil.find("#select");
+      let rep = value.map((r) => parseInt(r) + 1);
       for (let i = 0; i < quizJSON.length; i++) {
-        listeSelect.append(`<li>Question ${i + 1}: réponse #${rep[i]}</li>`)
+        listeSelect.append(`<li>Question ${i + 1}: réponse #${rep[i]}</li>`);
       }
     } else if (key == "Questions réussies") {
-      let ques = value.map(q => parseInt(q) + 1)
-      listeProfil.append(`<li class="list-group-item">${key}: ${ques.join(", ")}</li>`)
+      let ques = value.map((q) => parseInt(q) + 1);
+      listeProfil.append(
+        `<li class="list-group-item">${key}: ${ques.join(", ")}</li>`
+      );
     } else {
       listeProfil.append(`<li class="list-group-item">${key}: ${value}</li>`);
     }
-
   });
 
-/* ----- ACCORDEON ----- */
+  /* ----- ACCORDEON ----- */
 
   for (let i = 0; i < quizJSON.length; i++) {
     accordeon = $("#accordeon").html();
