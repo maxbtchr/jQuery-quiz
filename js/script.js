@@ -275,21 +275,21 @@ function afficherResultats() {
 
   if (profil["Bonnes réponses"] < 3) {
     $('.modal-title').text("Échec !");
-    $('.modal-body').append("<p>Vouz avez échoué. </p>");
+    $('.modal-body').append("<p>Vous avez échoué. </p>");
     $('#pointage').addClass("alert-danger");
     $('#pointage').html("Échec !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
   }
 
   if (profil["Bonnes réponses"] == 3) {
     $('.modal-title').text("Réussite !");
-    $('.modal-body').append("<p>Vouz avez réussi. </p>");
+    $('.modal-body').append("<p>Vous avez réussi. </p>");
     $('#pointage').addClass("alert-warning");
     $('#pointage').html("Vous avez réussi de justesse !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
   }
 
   if (profil["Bonnes réponses"] > 3) {
     $('.modal-title').text("Réussite !");
-    $('.modal-body').append("<p>Vouz avez réussi. </p>");
+    $('.modal-body').append("<p>Vous avez réussi. </p>");
     $('#pointage').addClass("alert-success");
     $('#pointage').html("Succès !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
   }
