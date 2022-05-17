@@ -1,4 +1,6 @@
-/* ----- FORMULAIRE ------ */
+/* ---------------------------- */
+/*           FORMULAIRE         */
+/* ---------------------------- */
 
 formulaireTemplate = $("#formulaireTemplate").html();
 formulaireTemplate = $(formulaireTemplate);
@@ -122,9 +124,14 @@ function sauvegarderProfil() {
   return profil;
 }
 
-/*------ QUIZ -------*/
+
+/* ---------------------------- */
+/*              QUIZ            */
+/* ---------------------------- */
 
 let questionActuelle = 0;
+
+/*----- CONTENU DU QUIZ -----*/
 
 const quizData = `
 [
@@ -183,6 +190,10 @@ const quizData = `
 `;
 
 const quizJSON = JSON.parse(quizData);
+
+
+/*----- CRÉER QUIZ -----*/
+
 function creerQuiz() {
   $("#formulaire").hide();
   $("#quiz").show();
@@ -197,8 +208,13 @@ function afficherQuestion() {
     return false;
   } 
 
+/*----- ANIMATION -----*/
+
   $('#questionsDiv').fadeIn(1000);
- 
+
+
+/*----- BARRE DE PROGRESSION -----*/ 
+
   let progressWidth = (questionActuelle / quizJSON.length) * 100 + 20;
 
   $(" #progress-bar ").css("width", `${progressWidth}%`);
@@ -207,6 +223,9 @@ function afficherQuestion() {
   $("#numeroQuestion").text(
     `Question ${questionActuelle + 1} de ${quizJSON.length}`
   );
+
+
+/*----- AFFICHER LA QUESTION ET LES RÉPONSES -----*/
 
   let question = quizJSON[questionActuelle].question;
   $("#question").text(`${question}`);
@@ -236,6 +255,9 @@ function afficherQuestion() {
   });
 }
 
+
+/*----- VÉRIFIER LES RÉPONSES -----*/
+
 function verifierReponse() {
   let choix = $('input[name="choix"]');
   let choixSelectionne;
@@ -255,13 +277,16 @@ function verifierReponse() {
 
   if (choixSelectionne) {
     questionActuelle++;
-    $("#choixDeReponses").empty()
-    $('#questionsDiv').hide(500)
+    $("#choixDeReponses").empty();
+    $('#questionsDiv').hide(500);
     afficherQuestion();
   }
 }
 
-/* ---- RESULTATS ---- */
+
+/* ---------------------------- */
+/*           RESULTATS          */
+/* ---------------------------- */
 
 function afficherResultats() {
 
@@ -269,7 +294,7 @@ function afficherResultats() {
   resultatsTemplate = $(resultatsTemplate);
   $("#resultats").append(resultatsTemplate);
 
-  /*---- MODAL & ALERTE POINTAGE ----*/
+/*---- MODAL & ALERTE POINTAGE ----*/
 
   $('#modal').modal('show');
 
@@ -294,7 +319,7 @@ function afficherResultats() {
     $('#pointage').html("Succès !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
   }
 
-  /*----- TABLEAU -----*/
+/*----- TABLEAU -----*/
 
   for (let i = 0; i < quizJSON.length; i++) {
     let bonneReponse = quizJSON[i].réponse == profil["Réponses sélectionnées"][i];
@@ -319,7 +344,7 @@ function afficherResultats() {
     },
   });
 
-  /*----- AFFICHAGE PROFIL -----*/
+/*----- AFFICHAGE PROFIL -----*/
 
   let listeProfil = resultatsTemplate.find("ul");
   Object.entries(profil).forEach((entry) => {
@@ -340,7 +365,7 @@ function afficherResultats() {
 
   });
 
-  /* ----- ACCORDEON ----- */
+/* ----- ACCORDEON ----- */
 
   for (let i = 0; i < quizJSON.length; i++) {
     accordeon = $("#accordeon").html();
