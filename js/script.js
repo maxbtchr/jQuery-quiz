@@ -3,7 +3,7 @@
 formulaireTemplate = $("#formulaireTemplate").html();
 formulaireTemplate = $(formulaireTemplate);
 $("#formulaire").append(formulaireTemplate);
-$("#quiz").hide()
+$("#quiz").hide();
 
 let estSoumis = false;
 let profil = {};
@@ -20,7 +20,7 @@ $("#enregistrement").validate({
       maxlength: 50,
       alphanumerique: true,
     },
-    date: {
+    dateDeNaissance: {
       required: true,
       datePlusPetite: true,
     },
@@ -37,7 +37,7 @@ $("#enregistrement").validate({
       required: "Le nom est obligatoire",
       maxlength: "Le nom ne peut être plus long que 50 caractères",
     },
-    date: {
+    dateDeNaissance: {
       required: "La date de naissance est requise",
     },
     statut: {
@@ -113,7 +113,7 @@ function sauvegarderProfil() {
   profil = {
     "Prénom": $("#prenom").val(),
     "Nom": $("#nom").val(),
-    "Âge": calculerAge($('#date').val()),
+    "Âge": calculerAge($('#dateDeNaissance').val()),
     "Statut": $("#statut").val(),
     "Réponses sélectionnées": [],
     "Bonnes réponses": 0,
@@ -185,7 +185,7 @@ const quizData = `
 const quizJSON = JSON.parse(quizData);
 function creerQuiz() {
   $("#formulaire").hide();
-  $("#quiz").show()
+  $("#quiz").show();
   afficherQuestion();
 }
 
@@ -225,10 +225,10 @@ function afficherQuestion() {
 
   if (questionActuelle + 1 !== quizJSON.length) {
     $("#btn-quiz").text("Question Suivante");
-    $("#btn-quiz").attr("aria-label", "question suivante")
+    $("#btn-quiz").attr("aria-label", "question suivante");
   } else {
     $("#btn-quiz").text("Terminer");
-    $("#btn-quiz").attr("aria-label", "terminer quiz")
+    $("#btn-quiz").attr("aria-label", "terminer quiz");
   }
 
   $("#btn-quiz").on("click", function () {
@@ -269,29 +269,32 @@ function afficherResultats() {
   resultatsTemplate = $(resultatsTemplate);
   $("#resultats").append(resultatsTemplate);
 
-  $('#modal').modal('show')
+  /*---- MODAL & ALERTE POINTAGE ----*/
+
+  $('#modal').modal('show');
 
   if (profil["Bonnes réponses"] < 3) {
-    $('.modal-title').text("Échec !")
-    $('.modal-body').append("<p>Vouz avez échoué. </p>")
-    $('#pointage').addClass("alert-danger")
-    $('#pointage').html("Échec !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+    $('.modal-title').text("Échec !");
+    $('.modal-body').append("<p>Vouz avez échoué. </p>");
+    $('#pointage').addClass("alert-danger");
+    $('#pointage').html("Échec !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
   }
 
   if (profil["Bonnes réponses"] == 3) {
-    $('.modal-title').text("Réussite !")
-    $('.modal-body').append("<p>Vouz avez réussi. </p>")
-    $('#pointage').addClass("alert-warning")
-    $('#pointage').html("Vous avez réussi de justesse !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+    $('.modal-title').text("Réussite !");
+    $('.modal-body').append("<p>Vouz avez réussi. </p>");
+    $('#pointage').addClass("alert-warning");
+    $('#pointage').html("Vous avez réussi de justesse !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
   }
 
   if (profil["Bonnes réponses"] > 3) {
-    $('.modal-title').text("Réussite !")
-    $('.modal-body').append("<p>Vouz avez réussi. </p>")
-    $('#pointage').addClass("alert-success")
-    $('#pointage').html("Succès !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length)
+    $('.modal-title').text("Réussite !");
+    $('.modal-body').append("<p>Vouz avez réussi. </p>");
+    $('#pointage').addClass("alert-success");
+    $('#pointage').html("Succès !</br>Vous avez obtenu " + profil['Bonnes réponses'] + " sur " + quizJSON.length);
   }
 
+  /*----- TABLEAU -----*/
 
   for (let i = 0; i < quizJSON.length; i++) {
     let bonneReponse = quizJSON[i].réponse == profil["Réponses sélectionnées"][i];
@@ -316,6 +319,8 @@ function afficherResultats() {
     },
   });
 
+  /*----- AFFICHAGE PROFIL -----*/
+
   let listeProfil = resultatsTemplate.find("ul");
   Object.entries(profil).forEach((entry) => {
     let [key, value] = entry;
@@ -324,7 +329,7 @@ function afficherResultats() {
       listeSelect = listeProfil.find("#select")
       let rep = value.map(r => parseInt(r) + 1)
       for (let i = 0; i < quizJSON.length; i++) {
-        listeSelect.append(`<li>Question ${i + 1}: réponse: ${rep[i]}</li>`)
+        listeSelect.append(`<li>Question ${i + 1}: réponse #${rep[i]}</li>`)
       }
     } else if (key == "Questions réussies") {
       let ques = value.map(q => parseInt(q) + 1)

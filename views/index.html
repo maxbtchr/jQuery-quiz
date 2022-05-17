@@ -7,8 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="../css/jquery-ui.min.css">
-    <link rel="stylesheet" href="../css/jquery-ui.structure.min.css">
     <title>Quiz sur connaissances musicales</title>
 </head>
 
@@ -32,8 +30,8 @@
                     <input type="text" class="form-control" id="nom" name="nom">
                 </div>
                 <div class="form-group">
-                    <label for="date de naissance">Votre date de naissance</label>
-                    <input class="form-control" id="date" type="date" name="date">
+                    <label for="dateDeNaissance">Votre date de naissance</label>
+                    <input class="form-control" id="dateDeNaissance" type="date" name="dateDeNaissance">
                 </div>
                 <div class="form-group">
                     <label class="my-1 mr-2" for="statut">Votre statut</label>
@@ -44,7 +42,7 @@
                     </select>
                 </div>
                 <hr class="mb-4">
-                <button type="submit" class="btn btn-secondary btn-lg btn-block">Soumettre</button>
+                <button type="submit" aria-label="soumettre formulaire" class="btn btn-secondary btn-lg btn-block">Soumettre</button>
             </form>
         </div>
     </template>
@@ -62,15 +60,15 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <!-- <p>Modal body text goes here.</p> -->
+                  <!-- <p>Texte de la modal.</p> -->
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Fermer fenêtre modal">Fermer</button>
                 </div>
               </div>
             </div>
           </div>
-        <div class="alert text-center" role="alert" id="pointage">Veuillez choisir une réponse</div>
+        <div class="alert text-center" role="alert" id="pointage"></div>
         <div class="row">
             <section class="col-md-3">
                 <h2 class="text-center">Vos informations</h2>
@@ -101,7 +99,7 @@
                         <div class="card-header" id="enteteUn">
                             <h3 class="mb-0">
                                 <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
-                                    data-target="#retrecirUn" aria-expanded="true" aria-controls="retrecirUn" aria-label="voir réponses">
+                                    data-target="#retrecirUn" aria-expanded="true" aria-controls="retrecirUn" aria-label="voir choix de réponses">
 
                                 </button>
                             </h3>
@@ -127,7 +125,7 @@
         <div id="formulaire"></div>
         <div id="quiz" class="text-center">
             <div class="progress mx-5 mb-5" id="progress-div">
-                <div class="progress-bar bg-secondary" id="progress-bar" role="progressbar" style="" aria-valuenow="" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar bg-secondary" id="progress-bar" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <div id="questionsDiv">
                 <h2 id="question" class="mb-3"></h2>
@@ -147,7 +145,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous">
     </script>
-    <script src="../js/jquery-ui.min.js"></script>
     <script src="../js/script.js"></script>
 </body>
 
