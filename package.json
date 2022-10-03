@@ -12,6 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "4.6",
+    "firebase": "^9.10.0",
+    "firebase-tools": "^11.13.0",
     "jquery": "^3.6.0",
     "jquery-validation": "^1.19.3",
     "sass": "^1.51.0"
